@@ -55,7 +55,7 @@ contract Voting is Ownable {
     
       WorkflowStatus state;
     
-    ///@notice I decided to go with only 2 mappings here, even though I probably could've 
+    ///@notice I decided to go with only 1 mapping here, even though I probably could've 
     /// made one for our proposal array, but I found it easier using an array 
     
     mapping (address => Voter) public voters;
@@ -99,14 +99,14 @@ contract Voting is Ownable {
         
     }
     
-     ///@notice same here our admin has all the rights, he can choose to end the voting period whenever he wants
-    ///!!ToThinkOf!! maybe implementing a require(at least 1 hour of vote)
+     ///@notice same here our admin has all the rights, he can choose to end the proposal period whenever he wants
+    ///!!ToThinkOf!! maybe implementing a require(at least 1 hour of proposals)
     /// since this contract is for testing better to not lock our timer(more flexibility)
     
     function endProposals(uint _endofProposals) public onlyOwner {
         
         require(state == WorkflowStatus.ProposalsRegistrationStarted);
-        // require(_endofProposals > 1 hours, "Admin should at least leave one hour for evryone registered to propose");
+        // require(_endofProposals > 1 hours, "Admin should at least leave one hour for every one registered to propose");
         
         endofProposals = _endofProposals + startOfProposals;
         state = WorkflowStatus.ProposalsRegistrationEnded;
@@ -123,7 +123,7 @@ contract Voting is Ownable {
     }
     
     ///@notice Before allowing to vote we want to be sure the msg.sender has the right to propose
-    /// check that he hasn't voted yet
+    /// check that he hasn't proposed yet
     /// check that the state for our contract is set to proposal started
     ///@dev we will push our new propositions with the description, id and voteCount
     ///@dev then we initiate the new state of our msg.sender to hasProposed = true 
@@ -146,7 +146,7 @@ contract Voting is Ownable {
     /// he can initiate it when he pleases
     ///!!improvementPossible!! make the voting period a minimum of xTime
     ///@dev we require that the current state == proposalRegistrationEnded
-    /// also we need to make sure that there is at least 2 proposals
+    /// also we need to make sure that there is at least 2 proposals before starting a vote
     /// We can then initiate the voting session, and change our state
     
     function startVoting() public onlyOwner {
@@ -179,7 +179,7 @@ contract Voting is Ownable {
         
     }
     
-    ///@notice The fun part start, we will authorize our whitelisted users to vote for their favorite proposal
+    ///@notice The fun part start, we will authorize our isRegistered users to vote for their favorite proposal
     ///@dev We need to make sur of a few things, our state must be == to VotingSessionStarted, the msg.sender == isRegistered
     /// the input from the user must be a valid index number, and finally the msg.sender can only vote once
     ///@dev we will administrate our vote to _proposalNumber that will give it to our votedProposalId
